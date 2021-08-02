@@ -10,7 +10,10 @@ try {
 
 fs.readdirSync('./xsl').forEach(file => {
 	fs.readFile(`./xsl/${file}`, 'utf-8', (err, data) => {
-		Object.entries(owfMapping).forEach(e => { data = data.replace(e[0], e[1].form) })
+		Object.entries(owfMapping).forEach(e => {
+			const replacer = new RegExp(e[0], 'g')
+			data = data.replace(replacer, e[1].form)
+		})
 		fs.writeFileSync(`${OWF_DIR}/${file}`, data)
 	})
 
