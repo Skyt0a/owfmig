@@ -11,12 +11,13 @@ fs.readdir('./XML')
 
 		for (let i = 0; i < res.length; i++) {
 			let file = res[i]
+			//if (file.includes('Technology_')) {
 
-			await axios.post('http://powen.cc.cec.eu.int:8082/jasspr/services/xml/v1/schemas/load', {
+			await axios.post('http://cisisse.cc.cec.eu.int:8082/jasspr/services/xml/v1/schemas/load', {
 				debugLevel: "0",
 				method: "single-file",
 				mode: "owf",
-				selectedFile: `/ec/prod/app/webroot/home/production/shared/OWF_GEN/${file}`
+				selectedFile: `/ec/prod/app/webroot/home/acceptance/shared/OWF_GEN/${file}`
 			}, {
 				auth: {
 					username: 'bazinje',
@@ -27,7 +28,9 @@ fs.readdir('./XML')
 				console.error(result.response.statusText)
 			})
 
+			//}
+
 			process.stdout.cursorTo(0);
-			process.stdout.write(`${i+1} / ${res.length}`);
+			process.stdout.write(`${i + 1} / ${res.length}`);
 		}
 	})

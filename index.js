@@ -433,9 +433,9 @@ function generate_RFS(fileName, path, parser) {
                             }
 
                             // RFS CMDB PERMISSION
-                            let formExcel = formsExcel.find(f => f['action/operation name'].toLowerCase() === operation['$'].name.toLowerCase() && f.formName.toLowerCase() === result.RFS['$'].name.toLowerCase())
+                            let formExcel = formsExcel.find(f => f['action/operation name'].toLowerCase() === operation['$'].name.toLowerCase().trim() && f.formName.toLowerCase() === result.RFS['$'].name.toLowerCase().trim())
                             let newFormName = ((formExcel && formExcel.newFormName) ? formExcel.newFormName : result.RFS['$'].name) + '.' + ((formExcel && formExcel.newActionName) ? formExcel.newActionName : operation['$'].name)
-                            let newVersion = result.RFS['$'].version ? result.RFS['$'].version : '1.0'
+                            let newVersion = (formExcel && formExcel.version) ? formExcel.version : (result.RFS['$'].version ? result.RFS['$'].version : '1.0')
 
                             // Mapping element action
                             let oldElement = `${result.RFS['$'].name.toLowerCase()}.${service['$'].name.toLowerCase()}.${operation['$'].name.toLowerCase()}`
@@ -444,9 +444,11 @@ function generate_RFS(fileName, path, parser) {
                                 version: newVersion
                             }
 
-                            let projectsName = mergedTemplates.flatMap(t => t.Template.Project).filter(p => p.Form.find(f => f.$.name === newFormName && f.$.version === newVersion)).map(p => p.$.name)
+                            let projectsName = mergedTemplates.flatMap(t => t.Template.Project).filter(p => p.Form.find(f => f.$.name.toLowerCase() === newFormName.toLowerCase() && f.$.version === newVersion)).map(p => p.$.name)
                             if (projectsName.length === 0) {
                                 console.error(`Could not found projects for ${oldElement} v${newVersion}`)
+                                console.error(`Could not found projects for ${newFormName} v${newVersion}`)
+                                console.log(' ')
                             }
 
                             if (service.$.is_allowed || operation.$.is_allowed) {
@@ -496,15 +498,15 @@ function generate_RFS(fileName, path, parser) {
 
 
                             operation['$'].item = service['$'].item
-                            operation['$'].version = result.RFS['$'].version ? result.RFS['$'].version : '1.0'
+                            operation['$'].version = newVersion
                             RFS_Attributes = { ...result.RFS['$'] }
                             delete RFS_Attributes.version
 
                             // Renaming
-                            formExcel = formsExcel.find(f =>
-                                f['action/operation name'].toLowerCase() === operation['$'].name.toLowerCase()
-                                && f.formName.toLowerCase() === result.RFS['$'].name.toLowerCase()
-                            )
+                            // formExcel = formsExcel.find(f =>
+                            //     f['action/operation name'].toLowerCase() === operation['$'].name.toLowerCase()
+                            //     && f.formName.toLowerCase() === result.RFS['$'].name.toLowerCase()
+                            // )
                             if (formExcel) {
                                 RFS_Attributes.name = formExcel.newFormName ? formExcel.newFormName : result.RFS['$'].name
                                 operation['$'].name = formExcel.newActionName ? formExcel.newActionName : operation['$'].name
